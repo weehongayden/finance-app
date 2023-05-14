@@ -148,6 +148,7 @@ export default function Create() {
       setValue("leftoverTenure", calculateLeftoverTenure);
     }
   }, [
+    setValue,
     calculateEndDate,
     calculatePricePerMonth,
     calculateLeftoverTenure,

@@ -2,6 +2,7 @@
 
 import { Dialog, Transition } from "@headlessui/react";
 import { Cog6ToothIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import Image from "next/image";
 import Link from "next/link";
 import { Dispatch, Fragment, SetStateAction } from "react";
 import { NavigationProp } from "../app/layout";
@@ -69,10 +70,12 @@ export default function SidebarMobile({
               </Transition.Child>
               <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-indigo-600 px-6 pb-4">
                 <div className="flex h-16 shrink-0 items-center">
-                  <img
+                  <Image
                     className="h-8 w-auto"
                     src="https://tailwindui.com/img/logos/mark.svg?color=white"
                     alt="Your Company"
+                    width={32}
+                    height={32}
                   />
                 </div>
                 <nav className="flex flex-1 flex-col">

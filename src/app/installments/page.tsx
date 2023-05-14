@@ -150,7 +150,7 @@ export default function Installment() {
     }
 
     console.log("Installment: ", installments);
-  }, [data]);
+  }, [installments, data]);
 
   return (
     <div className="px-4 sm:px-6 lg:px-8">
@@ -160,9 +160,9 @@ export default function Installment() {
             Installments
           </h1>
           <p className="mt-2 text-sm text-gray-700">
-            A list of all the installments that you're currently bind with your
-            account including the installment name, amount to pay per month,
-            total amount and role.
+            A list of all the installments that you&apos;re currently bind with
+            your account including the installment name, amount to pay per
+            month, total amount and role.
           </p>
         </div>
         <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
