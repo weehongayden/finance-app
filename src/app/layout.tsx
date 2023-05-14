@@ -122,16 +122,9 @@ export default function RootLayout({
                   <Menu as="div" className="relative">
                     <Menu.Button className="-m-1.5 flex items-center p-1.5">
                       <span className="sr-only">Open user menu</span>
-                      <Image
-                        className="h-8 w-8 rounded-full bg-gray-50"
-                        src="https://res.cloudinary.com/dyniiffju/image/upload/v1683953109/0_2-removebg-preview_nf8obw.png"
-                        width={32}
-                        height={32}
-                        alt="Profile"
-                      />
                       <span className="hidden lg:flex lg:items-center">
                         <span
-                          className="ml-4 text-sm font-semibold leading-6 text-gray-900"
+                          className="text-sm font-semibold leading-6 text-gray-900"
                           aria-hidden="true"
                         >
                           User Name
@@ -139,6 +132,13 @@ export default function RootLayout({
                         <ChevronDownIcon
                           className="ml-2 h-5 w-5 text-gray-400"
                           aria-hidden="true"
+                        />
+                        <Image
+                          className="ml-4 rounded-full bg-gray-50"
+                          src="https://res.cloudinary.com/dyniiffju/image/upload/v1683953109/0_2-removebg-preview_nf8obw.png"
+                          width={40}
+                          height={40}
+                          alt="Profile"
                         />
                       </span>
                     </Menu.Button>

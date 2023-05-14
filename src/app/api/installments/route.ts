@@ -34,18 +34,22 @@ export async function POST(req: Request) {
     leftoverTenure,
     payPerMonth,
   } = await req.json();
-  const installment = await prisma.installment.create({
-    data: {
-      name,
-      tenure,
-      leftoverTenure,
-      startDate,
-      endDate,
-      amount,
-      payPerMonth,
-      userId: 1,
-      cardId: card,
-    },
-  });
-  return NextResponse.json(installment);
+  try {
+    const installment = await prisma.installment.create({
+      data: {
+        name,
+        tenure,
+        leftoverTenure,
+        startDate,
+        endDate,
+        amount,
+        payPerMonth,
+        userId: 1,
+        cardId: card,
+      },
+    });
+    return NextResponse.json(installment);
+  } catch (error) {
+    return NextResponse.json(error);
+  }
 }
