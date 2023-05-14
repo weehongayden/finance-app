@@ -1,34 +1,21 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Finance App built by NextJs 13 App Router
 
-## Getting Started
+This is an experimental Next.js project aimed at exploring the features provided by Vercel. It allows me to delve into Vercel's capabilities for deployment and hosting, enhancing my understanding of its functionalities and optimizing my Next.js application for seamless deployment and performance.
 
-First, run the development server:
+## Background
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
+This finance app is not solely an expense manager application. Instead, it serves as a helpful tool for users to track and analyze their monthly expenses, including subscriptions, installments, fixed expenses, and more. By providing a comprehensive overview, the app allows users to gain valuable insights into their spending habits at a glance.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+This helps users understand their expenses better and make informed decisions about their finances.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Architecture Explain
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+This is a full-stack Finance App built with Next.js 13 and powered by the App Router. It leverages NeonDB as a database-as-a-service and utilizes Prisma as the glue between the app and the database.
 
-## Learn More
+This comprehensive application combines the power of Next.js for server-side rendering and NeonDB for efficient database management. Prisma acts as the bridge that connects the app with the database, enabling seamless data integration and retrieval. With this technology stack, the Finance App offers a robust and efficient solution for managing financial data and delivering a superior user experience.
 
-To learn more about Next.js, take a look at the following resources:
+## Feature and Technology Used
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- Prisma and Neon DB
+- Cron Job on Vercel
+- Route Handlers

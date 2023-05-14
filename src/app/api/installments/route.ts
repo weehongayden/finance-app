@@ -5,6 +5,16 @@ const prisma = new PrismaClient();
 
 export async function GET() {
   const installments = await prisma.installment.findMany({
+    orderBy: [
+      {
+        card: {
+          name: "asc",
+        },
+      },
+      {
+        leftoverTenure: "asc",
+      },
+    ],
     include: {
       user: true,
       card: true,
