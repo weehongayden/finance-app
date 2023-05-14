@@ -1,0 +1,52 @@
+datasource db {
+  url      = env("DATABASE_URL")
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id          Int           @id @default(autoincrement())
+  name        String?       @db.VarChar(256)
+  email       String        @unique @db.VarChar(256)
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+  Installment Installment[]
+  Card        Card[]
+
+  @@map("users")
+}
+
+model Card {
+  id            Int           @id @default(autoincrement())
+  userId        Int           @map("user_id")
+  name          String?       @db.VarChar(256)
+  statementDate Int           @map("statement_date")
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+  user          User          @relation(fields: [userId], references: [id])
+  Installment   Installment[]
+
+  @@map("cards")
+}
+
+model Installment {
+  id             Int      @id @default(autoincrement())
+  userId         Int      @map("user_id")
+  cardId         Int      @map("card_id")
+  name           String
+  tenure         Int
+  leftoverTenure Int      @map("leftover_tenure")
+  startDate      DateTime @map("start_date") @db.Date
+  endDate        DateTime @map("end_date") @db.Date
+  amount         Decimal  @db.Decimal(10, 2)
+  payPerMonth    Decimal  @map("pay_per_month") @db.Decimal(10, 2)
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+  user           User     @relation(fields: [userId], references: [id])
+  card           Card     @relation(fields: [cardId], references: [id])
+
+  @@map("installments")
+}
