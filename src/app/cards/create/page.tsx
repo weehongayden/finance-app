@@ -2,6 +2,8 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import * as z from "zod";
 
 export type CardProp = {
@@ -37,11 +39,31 @@ export default function Create() {
     });
     if (res.ok) {
       reset();
+      notify(true, `Record has been created successfully`);
+    } else {
+      notify(false, `Failed to create the record`);
     }
+  };
+
+  const notify = (status: boolean, message?: string) => {
+    if (status) return toast.success(message);
+    return toast.error(message);
   };
 
   return (
     <div className="max-w-7xl">
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="space-y-12">
           <div className="pb-8">

@@ -1,5 +1,6 @@
 "use client";
 
+import ConfirmationModal from "@/components/ConfirmationModal";
 import TableSkeleton from "@/components/TableSkeleton";
 import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
 import "@tanstack/react-table";
@@ -13,6 +14,8 @@ import moment from "moment";
 import { Copse } from "next/font/google";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import useSWR from "swr";
 import { fetchAll } from "../../utils/fetcher";
 import { classNames } from "../../utils/util";
@@ -54,6 +57,12 @@ export type UserProp = {
 };
 
 export default function Installment() {
+  const [openConfirmationDialog, setOpenConfirmationDialog] =
+    useState<boolean>(false);
+  const [selectedInstallment, setSelectedInstallment] = useState<{
+    id: number;
+    name: string;
+  }>();
   const [installments, setInstallments] = useState<InstallmentProp[]>([]);
   const { data, error, isLoading } = useSWR(
     "/api/installments",
@@ -91,22 +100,6 @@ export default function Installment() {
         header: "Tenure",
       },
       {
-        cell: (info) =>
-          moment(info.row.original.startDate).format("MMM DD, YYYY"),
-        meta: {
-          className: "text-right",
-        },
-        header: "Start Date",
-      },
-      {
-        cell: (info) =>
-          moment(info.row.original.endDate).format("MMM DD, YYYY"),
-        meta: {
-          className: "text-right",
-        },
-        header: "End Date",
-      },
-      {
         cell: (info) => (
           <>
             <span className={oldStandardTT.className}>
@@ -125,35 +118,42 @@ export default function Installment() {
         header: "Leftover Amount",
       },
       {
-        cell: (info) => {
-          const now = moment();
-          const updatedDate = moment().date(
-            info.row.original.card.statementDate
-          );
-
-          if (now.date() >= 15) {
-            updatedDate.add(1, "month");
-          }
-
-          return updatedDate.format("MMM DD, YYYY");
+        cell: (info) =>
+          moment(info.row.original.startDate).format("MMM DD, YYYY"),
+        meta: {
+          className: "text-right",
         },
-        header: "Upcoming Statement Date",
+        header: "Start Date",
+      },
+      {
+        cell: (info) =>
+          moment(info.row.original.endDate).format("MMM DD, YYYY"),
+        meta: {
+          className: "text-right",
+        },
+        header: "End Date",
       },
       {
         cell: (info) => {
           return (
             <>
-              <Link
-                href={`/installments/update/${info.row.original.id}`}
-                type="button"
-              >
+              <Link href={`/installments/update/${info.row.original.id}`}>
                 <PencilSquareIcon
                   className="h-5 w-5 text-indigo-500"
                   aria-hidden="true"
                 />
               </Link>
               <div className="px-2"></div>
-              <button type="button">
+              <button
+                onClick={() => {
+                  setOpenConfirmationDialog(!openConfirmationDialog);
+                  setSelectedInstallment({
+                    id: info.row.original.id,
+                    name: info.row.original.name,
+                  });
+                  // href={`/installments/delete/${info.row.original.id}`}>
+                }}
+              >
                 <TrashIcon
                   className="h-5 w-5 text-red-500"
                   aria-hidden="true"
@@ -185,8 +185,61 @@ export default function Installment() {
     }
   }, [data]);
 
+  const deleteInstallment = async (id: number) => {
+    const res = await fetch(`/api/installments/${id}`, {
+      method: "DELETE",
+    });
+    if (res.ok) {
+      return res.json();
+    }
+    return undefined;
+  };
+
+  const notify = (status: boolean, message?: string) => {
+    if (status) return toast.success(message);
+    return toast.error(message);
+  };
+
   return (
     <>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+      {selectedInstallment &&
+        selectedInstallment.id &&
+        selectedInstallment.name && (
+          <ConfirmationModal
+            isOpen={openConfirmationDialog}
+            setOpen={setOpenConfirmationDialog}
+            title={"Delete installment"}
+            message={
+              <span>
+                Are you sure want to delete <b>{selectedInstallment!.name}</b>?
+                <br />
+                This action cannot be undone.
+              </span>
+            }
+            action={async () => {
+              const res: InstallmentProp | undefined = await deleteInstallment(
+                selectedInstallment!.id
+              );
+              if (res) {
+                notify(true, `${res.name} has been deleted successfully`);
+              } else {
+                notify(false, `Failed to delete the record`);
+              }
+            }}
+          />
+        )}
       <div className="sm:flex sm:items-center">
         <div className="sm:flex-auto">
           <h1 className="text-base font-semibold leading-6 text-gray-900">
@@ -239,9 +292,10 @@ export default function Installment() {
                         <td
                           key={cell.id}
                           className={classNames(
-                            `${row.getVisibleCells().length !== index + 1
-                              ? "border-r-2 border-gray-200 "
-                              : ""
+                            `${
+                              row.getVisibleCells().length !== index + 1
+                                ? "border-r-2 border-gray-200 "
+                                : ""
                             }whitespace-nowrap p-4 text-sm text-gray-900`,
                             cell.column.columnDef.meta?.className ?? ""
                           )}
