@@ -13,7 +13,7 @@ export default function ConfirmationModal({
   setOpen: Dispatch<SetStateAction<boolean>>;
   title: string;
   message?: string | ReactNode;
-  action: () => {};
+  action: () => {} | void;
 }) {
   const cancelButtonRef = useRef(null);
 

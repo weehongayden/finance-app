@@ -14,6 +14,8 @@ import moment from "moment";
 import { Copse } from "next/font/google";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import useSWR from "swr";
 import { fetchAll } from "../../utils/fetcher";
 import { classNames } from "../../utils/util";
@@ -188,11 +190,30 @@ export default function Installment() {
       method: "DELETE",
     });
     if (res.ok) {
+      return res.json();
     }
+    return undefined;
+  };
+
+  const notify = (status: boolean, message?: string) => {
+    if (status) return toast.success(message);
+    return toast.error(message);
   };
 
   return (
     <>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       {selectedInstallment &&
         selectedInstallment.id &&
         selectedInstallment.name && (
@@ -207,7 +228,16 @@ export default function Installment() {
                 This action cannot be undone.
               </span>
             }
-            action={() => deleteInstallment(selectedInstallment!.id)}
+            action={async () => {
+              const res: InstallmentProp | undefined = await deleteInstallment(
+                selectedInstallment!.id
+              );
+              if (res) {
+                notify(true, `${res.name} has been deleted successfully`);
+              } else {
+                notify(false, `Failed to delete the record`);
+              }
+            }}
           />
         )}
       <div className="sm:flex sm:items-center">

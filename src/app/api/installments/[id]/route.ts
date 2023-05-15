@@ -51,9 +51,9 @@ export async function DELETE(req: Request) {
     const installment = await prisma.installment.delete({
       where: {
         id: Number(splitPath[splitPath.length - 1]),
-      }
+      },
     });
-    return NextResponse.json(installment);
+    return NextResponse.json({}, { status: 200 });
   } catch (error) {
     return NextResponse.json(
       {
