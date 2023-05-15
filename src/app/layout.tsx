@@ -1,5 +1,6 @@
 "use client";
 
+import { NavigationProp } from "@/types/layout";
 import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import {
@@ -18,19 +19,6 @@ import Sidebar from "../components/Sidebar";
 import SidebarMobile from "../components/SidebarMobile";
 import { classNames } from "../utils/util";
 import "./globals.css";
-
-export type NavigationProp = {
-  name: string;
-  href: string;
-  icon: React.ForwardRefExoticComponent<
-    React.PropsWithoutRef<React.SVGProps<SVGSVGElement>> & {
-      title?: string;
-      titleId?: string;
-    } & React.RefAttributes<SVGSVGElement>
-  >;
-  parent?: string;
-  isRoot?: boolean;
-};
 
 const navigation: NavigationProp[] = [
   { name: "Dashboard", href: "#", icon: HomeIcon, isRoot: true },

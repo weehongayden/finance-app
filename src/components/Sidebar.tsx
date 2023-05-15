@@ -1,9 +1,9 @@
 "use client";
 
+import { NavigationProp } from "@/types/layout";
 import { Cog6ToothIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import Link from "next/link";
-import { NavigationProp } from "../app/layout";
 import { classNames } from "../utils/util";
 
 export default function Sidebar({

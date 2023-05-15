@@ -1,16 +1,11 @@
 "use client";
 
+import { CardProp } from "@/types/card";
+import { create } from "@/utils/fetcher";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 import * as z from "zod";
-
-export type CardProp = {
-  id: number;
-  name: string;
-  statementDate: number;
-};
 
 const schema = z.object({
   name: z.string().trim().min(1, "Installment cannot be blank"),
@@ -33,11 +28,8 @@ export default function Create() {
   });
 
   const onSubmit: SubmitHandler<CardProp> = async (data) => {
-    const res = await fetch("/api/cards", {
-      method: "POST",
-      body: JSON.stringify(data),
-    });
-    if (res.ok) {
+    const res = await create("/api/cards", data);
+    if (res) {
       reset();
       notify(true, `Record has been created successfully`);
     } else {
@@ -52,18 +44,6 @@ export default function Create() {
 
   return (
     <div className="max-w-7xl">
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="space-y-12">
           <div className="pb-8">

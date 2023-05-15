@@ -44,6 +44,7 @@ model Installment {
   amount         Decimal  @db.Decimal(10, 2)
   payPerMonth    Decimal  @map("pay_per_month") @db.Decimal(10, 2)
   isActive       Boolean  @default(true) @map("is_active")
+  isExclude      Boolean  @default(false) @map("is_exclude")
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")
   user           User     @relation(fields: [userId], references: [id])

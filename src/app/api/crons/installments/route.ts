@@ -27,14 +27,20 @@ export async function GET() {
           },
           data: {
             leftoverTenure: leftoverTenure,
-            isActive: leftoverTenure <= 0 ? true : false,
+            isActive: leftoverTenure > 0 ? true : false,
             updatedAt: new Date(),
           },
         });
       }
     }
-    return NextResponse.json({ status: "ok" });
+    return NextResponse.json(
+      {
+        message: "Cron job has been executed successfully",
+      },
+      { status: 200 }
+    );
   } catch (error) {
-    return NextResponse.json(error);
+    console.error(error);
+    return NextResponse.json({ data: error }, { status: 400 });
   }
 }

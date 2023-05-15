@@ -1,11 +1,11 @@
 "use client";
 
+import { NavigationProp } from "@/types/layout";
 import { Dialog, Transition } from "@headlessui/react";
 import { Cog6ToothIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import Link from "next/link";
 import { Dispatch, Fragment, SetStateAction } from "react";
-import { NavigationProp } from "../app/layout";
 import { classNames } from "../utils/util";
 
 export default function SidebarMobile({

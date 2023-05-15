@@ -2,6 +2,7 @@
 
 import ConfirmationModal from "@/components/ConfirmationModal";
 import TableSkeleton from "@/components/TableSkeleton";
+import { InstallmentProp } from "@/types/installment";
 import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
 import "@tanstack/react-table";
 import {
@@ -14,47 +15,15 @@ import moment from "moment";
 import { Copse } from "next/font/google";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 import useSWR from "swr";
-import { fetchAll } from "../../utils/fetcher";
+import { fetchAll, remove } from "../../utils/fetcher";
 import { classNames } from "../../utils/util";
 
 const oldStandardTT = Copse({
   weight: "400",
   preload: false,
 });
-
-export type InstallmentProp = {
-  id: number;
-  name: string;
-  statementDate: number;
-  tenure: number;
-  leftoverTenure: number;
-  startDate: Date;
-  endDate: Date;
-  amount: number;
-  payPerMonth: number;
-  user: UserProp;
-  card: CardProp;
-};
-
-export type CardProp = {
-  id: number;
-  userId: number;
-  name: string;
-  statementDate: number;
-  createdAt: Date;
-  updatedAt: Date;
-};
-
-export type UserProp = {
-  id: number;
-  name: string;
-  email: string;
-  createdAt: Date;
-  updatedAt: Date;
-};
 
 export default function Installment() {
   const [openConfirmationDialog, setOpenConfirmationDialog] =
@@ -64,7 +33,7 @@ export default function Installment() {
     name: string;
   }>();
   const [installments, setInstallments] = useState<InstallmentProp[]>([]);
-  const { data, error, isLoading } = useSWR(
+  const { data, mutate, isLoading } = useSWR(
     "/api/installments",
     fetchAll<InstallmentProp>
   );
@@ -151,7 +120,6 @@ export default function Installment() {
                     id: info.row.original.id,
                     name: info.row.original.name,
                   });
-                  // href={`/installments/delete/${info.row.original.id}`}>
                 }}
               >
                 <TrashIcon
@@ -168,7 +136,7 @@ export default function Installment() {
         header: " ",
       },
     ],
-    []
+    [openConfirmationDialog]
   );
 
   const table = useReactTable({
@@ -202,18 +170,6 @@ export default function Installment() {
 
   return (
     <>
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
       {selectedInstallment &&
         selectedInstallment.id &&
         selectedInstallment.name && (
@@ -229,11 +185,15 @@ export default function Installment() {
               </span>
             }
             action={async () => {
-              const res: InstallmentProp | undefined = await deleteInstallment(
-                selectedInstallment!.id
+              const res = await remove(
+                `/api/installments/${selectedInstallment.id}`
               );
               if (res) {
-                notify(true, `${res.name} has been deleted successfully`);
+                notify(
+                  true,
+                  `${selectedInstallment.name} has been deleted successfully`
+                );
+                mutate();
               } else {
                 notify(false, `Failed to delete the record`);
               }

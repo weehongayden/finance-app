@@ -33,8 +33,9 @@ export async function PUT(req: Request) {
         cardId: card,
       },
     });
-    return NextResponse.json(installment);
+    return NextResponse.json({ data: installment }, { status: 200 });
   } catch (error) {
+    console.error("Installment PUT API: ", error);
     return NextResponse.json(
       {
         data: error,
@@ -53,8 +54,9 @@ export async function DELETE(req: Request) {
         id: Number(splitPath[splitPath.length - 1]),
       },
     });
-    return NextResponse.json({}, { status: 200 });
+    return NextResponse.json({ data: installment }, { status: 200 });
   } catch (error) {
+    console.error("Installment DELETE API: ", error);
     return NextResponse.json(
       {
         data: error,
