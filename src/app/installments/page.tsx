@@ -1,6 +1,7 @@
 "use client";
 
 import TableSkeleton from "@/components/TableSkeleton";
+import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
 import "@tanstack/react-table";
 import {
   ColumnDef,
@@ -9,11 +10,17 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import moment from "moment";
+import { Copse } from "next/font/google";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
 import { fetchAll } from "../../utils/fetcher";
 import { classNames } from "../../utils/util";
+
+const oldStandardTT = Copse({
+  weight: "400",
+  preload: false,
+});
 
 export type InstallmentProp = {
   id: number;
@@ -63,12 +70,12 @@ export default function Installment() {
         header: "Pay Per Month",
         cell: (info) => (
           <>
-            <span className="pr-3">SGD</span>
-            <span>
+            <span className={oldStandardTT.className}>
               {Number(info.row.original.payPerMonth).toLocaleString(undefined, {
                 minimumFractionDigits: 2,
               })}
             </span>
+            <span className="pl-3">SGD</span>
           </>
         ),
         meta: {
@@ -79,7 +86,7 @@ export default function Installment() {
         cell: (info) =>
           `${info.row.original.leftoverTenure} / ${info.row.original.tenure}`,
         meta: {
-          className: "text-center",
+          className: `text-center ${oldStandardTT.className}`,
         },
         header: "Tenure",
       },
@@ -102,14 +109,14 @@ export default function Installment() {
       {
         cell: (info) => (
           <>
-            <span className="pr-3">SGD</span>
-            <span>
+            <span className={oldStandardTT.className}>
               {Number(
                 info.row.original.payPerMonth * info.row.original.leftoverTenure
               ).toLocaleString(undefined, {
                 minimumFractionDigits: 2,
               })}
             </span>
+            <span className="pl-3">SGD</span>
           </>
         ),
         meta: {
@@ -132,6 +139,34 @@ export default function Installment() {
         },
         header: "Upcoming Statement Date",
       },
+      {
+        cell: (info) => {
+          return (
+            <>
+              <Link
+                href={`/installments/update/${info.row.original.id}`}
+                type="button"
+              >
+                <PencilSquareIcon
+                  className="h-5 w-5 text-indigo-500"
+                  aria-hidden="true"
+                />
+              </Link>
+              <div className="px-2"></div>
+              <button type="button">
+                <TrashIcon
+                  className="h-5 w-5 text-red-500"
+                  aria-hidden="true"
+                />
+              </button>
+            </>
+          );
+        },
+        meta: {
+          className: "flex",
+        },
+        header: " ",
+      },
     ],
     []
   );
@@ -148,9 +183,7 @@ export default function Installment() {
         data.filter((installment) => installment.user.id === 1)
       );
     }
-
-    console.log("Installment: ", installments);
-  }, [installments, data]);
+  }, [data]);
 
   return (
     <>
@@ -198,15 +231,18 @@ export default function Installment() {
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {isLoading ? (
-                  <TableSkeleton rowSize={10} columnSize={7} />
-                ) : (
+                  <TableSkeleton rowSize={8} columnSize={8} />
+                ) : data && data.length > 0 ? (
                   table.getRowModel().rows.map((row) => (
                     <tr key={row.id}>
-                      {row.getVisibleCells().map((cell) => (
+                      {row.getVisibleCells().map((cell, index) => (
                         <td
                           key={cell.id}
                           className={classNames(
-                            "whitespace-nowrap p-4 text-sm text-gray-900",
+                            `${row.getVisibleCells().length !== index + 1
+                              ? "border-r-2 border-gray-200 "
+                              : ""
+                            }whitespace-nowrap p-4 text-sm text-gray-900`,
                             cell.column.columnDef.meta?.className ?? ""
                           )}
                         >
@@ -216,23 +252,17 @@ export default function Installment() {
                           )}
                         </td>
                       ))}
-                      <td className="flex whitespace-nowrap p-4 text-sm text-gray-900">
-                        <button
-                          type="button"
-                          className="rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                        >
-                          Edit
-                        </button>
-                        <div className="px-1"></div>
-                        <button
-                          type="button"
-                          className="rounded-md bg-red-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
-                        >
-                          Delete
-                        </button>
-                      </td>
                     </tr>
                   ))
+                ) : (
+                  <tr>
+                    <td
+                      className="whitespace-nowrap p-4 text-sm text-gray-900 text-center"
+                      colSpan={8}
+                    >
+                      No installments found
+                    </td>
+                  </tr>
                 )}
               </tbody>
             </table>

@@ -71,11 +71,10 @@ export default function SidebarMobile({
               <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-indigo-600 px-6 pb-4">
                 <div className="flex h-16 shrink-0 items-center">
                   <Image
-                    className="h-8 w-auto"
-                    src="https://tailwindui.com/img/logos/mark.svg?color=white"
+                    src="https://res.cloudinary.com/dyniiffju/image/upload/v1684081222/Ayden_draw_me_a_logo_with_the_head_of_golden_retrieve_in_round__7ee37226-7249-4b85-aa1e-75f2b98c872c-removebg-preview_e6uuav.png"
                     alt="Your Company"
-                    width={32}
-                    height={32}
+                    width={50}
+                    height={50}
                   />
                 </div>
                 <nav className="flex flex-1 flex-col">

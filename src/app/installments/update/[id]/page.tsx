@@ -3,17 +3,13 @@
 import { CardProp } from "@/app/cards/create/page";
 import { zodResolver } from "@hookform/resolvers/zod";
 import moment from "moment";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import Select, { SingleValue } from "react-select";
 import * as z from "zod";
-import { InstallmentProp } from "../page";
-
-export type CardOptionProp = {
-  label: string;
-  value: number;
-  statementDate: number;
-};
+import { CardOptionProp } from "../../create/page";
+import { InstallmentProp } from "../../page";
 
 const zodSchema = z.object({
   name: z.string().trim().min(1, "Installment cannot be blank"),
@@ -55,13 +51,25 @@ const getCardData = async () => {
   }
 };
 
-export default function Create() {
+const getInstallmentData = async () => {
+  const res = await fetch("/api/installments");
+
+  if (res.ok) {
+    return await res.json();
+  }
+};
+
+export default function Update({ params }: { params: { id: number } }) {
   const [statementDate, setStatementDate] = useState<number>(1);
-  const [cardOptions, setCardOptions] = useState([]);
+  const [cardOptions, setCardOptions] = useState<CardOptionProp[]>();
+  const [selectedCardOptions, setSelectedCardOptions] =
+    useState<CardOptionProp>();
+  const router = useRouter();
   const {
     register,
     watch,
     handleSubmit,
+    reset,
     getValues,
     setValue,
     formState: { errors },
@@ -71,8 +79,10 @@ export default function Create() {
       | "name"
       | "tenure"
       | "startDate"
+      | "endDate"
       | "amount"
       | "leftoverTenure"
+      | "payPerMonth"
       | "endDate"
       | "payPerMonth"
     > & { card: number }
@@ -120,29 +130,63 @@ export default function Create() {
   }
 
   const onSubmit = async () => {
-    const res = await fetch("/api/installments", {
-      method: "POST",
+    const res = await fetch(`/api/installments/${params.id}`, {
+      method: "PUT",
       body: JSON.stringify(getValues()),
     });
 
     if (res.ok) {
+      const data = await res.json();
+      data.startDate = moment(data.startDate).format("YYYY-MM-DD");
+      reset(data);
     }
   };
 
   useEffect(() => {
     (async () => {
       const data = await getCardData();
-      setCardOptions(
-        () =>
-          data &&
-          data.map((card: CardProp) => ({
-            label: card.name,
-            value: card.id,
-            statementDate: card.statementDate,
-          }))
-      );
+      const cardOptions =
+        data &&
+        data.map((card: CardProp) => ({
+          label: card.name,
+          value: card.id,
+          statementDate: card.statementDate,
+        }));
+      setCardOptions(cardOptions);
+      const installmentData = await getInstallmentData();
+
+      if (installmentData && installmentData.length > 0) {
+        const filterData = installmentData.filter(
+          (res: InstallmentProp) => res.id === Number(params.id)
+        );
+
+        let cardId: number | undefined = undefined;
+
+        const data = filterData.map((res: InstallmentProp) => {
+          if (cardOptions && Array.isArray(cardOptions)) {
+            const cardDetails: CardOptionProp | undefined = cardOptions.find(
+              (option: CardOptionProp) => option.value == res.card.id
+            );
+            cardId = cardDetails?.value;
+            setSelectedCardOptions(cardDetails);
+          }
+
+          return {
+            name: res.name,
+            card: cardId,
+            tenure: res.tenure,
+            leftoverTenure: res.leftoverTenure,
+            startDate: moment(res.startDate).format("YYYY-MM-DD"),
+            endDate: res.endDate,
+            amount: res.amount,
+            payPerMonth: res.payPerMonth,
+          };
+        })[0];
+
+        reset(data);
+      }
     })();
-  }, []);
+  }, [params.id, reset]);
 
   useEffect(() => {
     if (calculateEndDate) {
@@ -202,15 +246,9 @@ export default function Create() {
               <div className="mt-2">
                 <Select
                   {...register("card")}
-                  defaultValue={null}
+                  value={selectedCardOptions}
                   id="card"
-                  onChange={(
-                    newValue: SingleValue<
-                      { label: string; value: number } & {
-                        statementDate: number;
-                      }
-                    >
-                  ) => {
+                  onChange={(newValue: SingleValue<CardOptionProp>) => {
                     if (newValue) {
                       setValue("card", newValue.value);
                       setStatementDate(newValue.statementDate);
@@ -356,6 +394,7 @@ export default function Create() {
 
       <div className="pt-5 flex items-center justify-end gap-x-6">
         <button
+          onClick={() => router.back()}
           type="button"
           className="text-sm font-semibold leading-6 text-gray-900"
         >
@@ -365,7 +404,7 @@ export default function Create() {
           type="submit"
           className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
         >
-          Save
+          Update
         </button>
       </div>
     </form>
