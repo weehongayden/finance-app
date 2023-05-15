@@ -1,5 +1,6 @@
 "use client";
 
+import ConfirmationModal from "@/components/ConfirmationModal";
 import TableSkeleton from "@/components/TableSkeleton";
 import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
 import "@tanstack/react-table";
@@ -54,6 +55,12 @@ export type UserProp = {
 };
 
 export default function Installment() {
+  const [openConfirmationDialog, setOpenConfirmationDialog] =
+    useState<boolean>(false);
+  const [selectedInstallment, setSelectedInstallment] = useState<{
+    id: number;
+    name: string;
+  }>();
   const [installments, setInstallments] = useState<InstallmentProp[]>([]);
   const { data, error, isLoading } = useSWR(
     "/api/installments",
@@ -91,22 +98,6 @@ export default function Installment() {
         header: "Tenure",
       },
       {
-        cell: (info) =>
-          moment(info.row.original.startDate).format("MMM DD, YYYY"),
-        meta: {
-          className: "text-right",
-        },
-        header: "Start Date",
-      },
-      {
-        cell: (info) =>
-          moment(info.row.original.endDate).format("MMM DD, YYYY"),
-        meta: {
-          className: "text-right",
-        },
-        header: "End Date",
-      },
-      {
         cell: (info) => (
           <>
             <span className={oldStandardTT.className}>
@@ -125,35 +116,42 @@ export default function Installment() {
         header: "Leftover Amount",
       },
       {
-        cell: (info) => {
-          const now = moment();
-          const updatedDate = moment().date(
-            info.row.original.card.statementDate
-          );
-
-          if (now.date() >= 15) {
-            updatedDate.add(1, "month");
-          }
-
-          return updatedDate.format("MMM DD, YYYY");
+        cell: (info) =>
+          moment(info.row.original.startDate).format("MMM DD, YYYY"),
+        meta: {
+          className: "text-right",
         },
-        header: "Upcoming Statement Date",
+        header: "Start Date",
+      },
+      {
+        cell: (info) =>
+          moment(info.row.original.endDate).format("MMM DD, YYYY"),
+        meta: {
+          className: "text-right",
+        },
+        header: "End Date",
       },
       {
         cell: (info) => {
           return (
             <>
-              <Link
-                href={`/installments/update/${info.row.original.id}`}
-                type="button"
-              >
+              <Link href={`/installments/update/${info.row.original.id}`}>
                 <PencilSquareIcon
                   className="h-5 w-5 text-indigo-500"
                   aria-hidden="true"
                 />
               </Link>
               <div className="px-2"></div>
-              <button type="button">
+              <button
+                onClick={() => {
+                  setOpenConfirmationDialog(!openConfirmationDialog);
+                  setSelectedInstallment({
+                    id: info.row.original.id,
+                    name: info.row.original.name,
+                  });
+                  // href={`/installments/delete/${info.row.original.id}`}>
+                }}
+              >
                 <TrashIcon
                   className="h-5 w-5 text-red-500"
                   aria-hidden="true"
@@ -185,8 +183,33 @@ export default function Installment() {
     }
   }, [data]);
 
+  const deleteInstallment = async (id: number) => {
+    const res = await fetch(`/api/installments/${id}`, {
+      method: "DELETE",
+    });
+    if (res.ok) {
+    }
+  };
+
   return (
     <>
+      {selectedInstallment &&
+        selectedInstallment.id &&
+        selectedInstallment.name && (
+          <ConfirmationModal
+            isOpen={openConfirmationDialog}
+            setOpen={setOpenConfirmationDialog}
+            title={"Delete installment"}
+            message={
+              <span>
+                Are you sure want to delete <b>{selectedInstallment!.name}</b>?
+                <br />
+                This action cannot be undone.
+              </span>
+            }
+            action={() => deleteInstallment(selectedInstallment!.id)}
+          />
+        )}
       <div className="sm:flex sm:items-center">
         <div className="sm:flex-auto">
           <h1 className="text-base font-semibold leading-6 text-gray-900">
@@ -239,9 +262,10 @@ export default function Installment() {
                         <td
                           key={cell.id}
                           className={classNames(
-                            `${row.getVisibleCells().length !== index + 1
-                              ? "border-r-2 border-gray-200 "
-                              : ""
+                            `${
+                              row.getVisibleCells().length !== index + 1
+                                ? "border-r-2 border-gray-200 "
+                                : ""
                             }whitespace-nowrap p-4 text-sm text-gray-900`,
                             cell.column.columnDef.meta?.className ?? ""
                           )}

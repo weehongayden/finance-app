@@ -43,3 +43,23 @@ export async function PUT(req: Request) {
     );
   }
 }
+
+export async function DELETE(req: Request) {
+  const { pathname } = new URL(req.url);
+  const splitPath = pathname.split("/");
+  try {
+    const installment = await prisma.installment.delete({
+      where: {
+        id: Number(splitPath[splitPath.length - 1]),
+      }
+    });
+    return NextResponse.json(installment);
+  } catch (error) {
+    return NextResponse.json(
+      {
+        data: error,
+      },
+      { status: 400 }
+    );
+  }
+}

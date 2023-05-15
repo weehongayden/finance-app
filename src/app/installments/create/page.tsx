@@ -3,6 +3,7 @@
 import { CardProp } from "@/app/cards/create/page";
 import { zodResolver } from "@hookform/resolvers/zod";
 import moment from "moment";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import Select, { SingleValue } from "react-select";
@@ -56,6 +57,7 @@ const getCardData = async () => {
 };
 
 export default function Create() {
+  const router = useRouter();
   const [statementDate, setStatementDate] = useState<number>(1);
   const [cardOptions, setCardOptions] = useState([]);
   const {
@@ -356,10 +358,11 @@ export default function Create() {
 
       <div className="pt-5 flex items-center justify-end gap-x-6">
         <button
+          onClick={() => router.back()}
           type="button"
           className="text-sm font-semibold leading-6 text-gray-900"
         >
-          Cancel
+          Back
         </button>
         <button
           type="submit"

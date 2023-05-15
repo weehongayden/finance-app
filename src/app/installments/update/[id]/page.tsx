@@ -398,7 +398,7 @@ export default function Update({ params }: { params: { id: number } }) {
           type="button"
           className="text-sm font-semibold leading-6 text-gray-900"
         >
-          Cancel
+          Back
         </button>
         <button
           type="submit"
