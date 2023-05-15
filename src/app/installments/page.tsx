@@ -86,7 +86,7 @@ export default function Installment() {
         cell: (info) =>
           `${info.row.original.leftoverTenure} / ${info.row.original.tenure}`,
         meta: {
-          className: "text-center",
+          className: `text-center ${oldStandardTT.className}`,
         },
         header: "Tenure",
       },
@@ -109,7 +109,7 @@ export default function Installment() {
       {
         cell: (info) => (
           <>
-            <span>
+            <span className={oldStandardTT.className}>
               {Number(
                 info.row.original.payPerMonth * info.row.original.leftoverTenure
               ).toLocaleString(undefined, {
@@ -239,10 +239,9 @@ export default function Installment() {
                         <td
                           key={cell.id}
                           className={classNames(
-                            `${
-                              row.getVisibleCells().length !== index + 1
-                                ? "border-r-2 border-gray-200 "
-                                : ""
+                            `${row.getVisibleCells().length !== index + 1
+                              ? "border-r-2 border-gray-200 "
+                              : ""
                             }whitespace-nowrap p-4 text-sm text-gray-900`,
                             cell.column.columnDef.meta?.className ?? ""
                           )}
