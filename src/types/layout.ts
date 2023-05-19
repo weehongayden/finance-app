@@ -1,4 +1,4 @@
-export type NavigationProp = {
+export interface NavigationProp {
   name: string;
   href: string;
   icon: React.ForwardRefExoticComponent<

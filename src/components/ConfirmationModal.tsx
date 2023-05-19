@@ -1,6 +1,7 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
-import { Dispatch, Fragment, ReactNode, SetStateAction, useRef } from "react";
+import type { Dispatch, SetStateAction } from "react";
+import { Fragment, ReactNode, useRef } from "react";
 
 export default function ConfirmationModal({
   isOpen,

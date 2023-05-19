@@ -1,4 +1,4 @@
-export type UserProp = {
+export interface UserProp {
   id: number;
   name: string;
   email: string;

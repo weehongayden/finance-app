@@ -1,4 +1,4 @@
-export type CardProp = {
+export interface CardProp {
   id: number;
   userId: number;
   name: string;
@@ -7,7 +7,7 @@ export type CardProp = {
   updatedAt: Date;
 };
 
-export type CardOptionProp = {
+export interface CardOptionProp {
   label: string;
   value: number;
   statementDate: number;

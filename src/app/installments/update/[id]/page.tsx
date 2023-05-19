@@ -1,8 +1,8 @@
 "use client";
 
 import Form from "@/components/installments/Form";
-import { CardOptionProp, CardProp } from "@/types/card";
-import { InstallmentProp } from "@/types/installment";
+import type { CardOptionProp, CardProp } from "@/types/card";
+import type { InstallmentProp } from "@/types/installment";
 import { fetchAll, update } from "@/utils/fetcher";
 import { schema } from "@/utils/validation/installment";
 import { zodResolver } from "@hookform/resolvers/zod";

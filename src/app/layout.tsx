@@ -1,6 +1,6 @@
 "use client";
 
-import { NavigationProp } from "@/types/layout";
+import type { NavigationProp } from "@/types/layout";
 import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import {
@@ -9,6 +9,7 @@ import {
   BellIcon,
   CreditCardIcon,
   HomeIcon,
+  RectangleGroupIcon,
 } from "@heroicons/react/24/outline";
 import localFont from "next/font/local";
 import Image from "next/image";
@@ -23,7 +24,13 @@ import "./globals.css";
 const navigation: NavigationProp[] = [
   { name: "Dashboard", href: "#", icon: HomeIcon, isRoot: true },
   {
-    name: "Credit Card",
+    name: "Expense",
+    href: "/expenses/create",
+    icon: RectangleGroupIcon,
+    parent: "expenses",
+  },
+  {
+    name: "Card",
     href: "/cards/create",
     icon: CreditCardIcon,
     parent: "cards",

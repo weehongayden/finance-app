@@ -2,11 +2,10 @@
 
 import ConfirmationModal from "@/components/ConfirmationModal";
 import TableSkeleton from "@/components/TableSkeleton";
-import { InstallmentProp } from "@/types/installment";
+import type { InstallmentProp } from "@/types/installment";
 import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
-import "@tanstack/react-table";
+import type { ColumnDef } from "@tanstack/react-table";
 import {
-  ColumnDef,
   flexRender,
   getCoreRowModel,
   useReactTable,

@@ -1,6 +1,6 @@
 "use client";
 
-import { CardProp } from "@/types/card";
+import type { CardProp } from "@/types/card";
 import { create } from "@/utils/fetcher";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";

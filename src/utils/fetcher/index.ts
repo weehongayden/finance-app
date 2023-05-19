@@ -14,7 +14,7 @@ export const fetchAll = async <T>(url: string): Promise<T[]> => {
   }
 };
 
-export const create = async <T>(url: string, body: T): Promise<T[]> => {
+export const create = async <T, K>(url: string, body: T): Promise<K> => {
   try {
     const resp = await fetch(url, {
       method: "POST",
@@ -36,7 +36,7 @@ export const create = async <T>(url: string, body: T): Promise<T[]> => {
   }
 };
 
-export const update = async <T>(url: string, body: T): Promise<T> => {
+export const update = async <T, K>(url: string, body: T): Promise<K> => {
   try {
     const resp = await fetch(url, {
       method: "PUT",
@@ -55,7 +55,7 @@ export const update = async <T>(url: string, body: T): Promise<T> => {
   }
 };
 
-export const remove = async <T>(url: string): Promise<T> => {
+export const remove = async <T, K>(url: string): Promise<K> => {
   try {
     const resp = await fetch(url, {
       method: "DELETE",

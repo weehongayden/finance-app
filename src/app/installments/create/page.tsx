@@ -1,20 +1,18 @@
 "use client";
 
 import Form from "@/components/installments/Form";
-import { CardOptionProp, CardProp } from "@/types/card";
-import { InstallmentProp } from "@/types/installment";
+import type { CardOptionProp, CardProp } from "@/types/card";
+import type { FormInstallmentProp } from "@/types/installment";
 import { create, fetchAll } from "@/utils/fetcher";
 import { schema } from "@/utils/validation/installment";
 import { zodResolver } from "@hookform/resolvers/zod";
 import moment from "moment";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import useSWR from "swr";
 
 export default function Create() {
-  const router = useRouter();
   const { data: cards, isLoading } = useSWR<CardProp[]>("/api/cards", fetchAll);
   const [selectCardOption, setSelectedCardOption] =
     useState<CardOptionProp | null>();
@@ -28,18 +26,7 @@ export default function Create() {
     getValues,
     setValue,
     formState: { errors },
-  } = useForm<
-    Pick<
-      InstallmentProp,
-      | "name"
-      | "tenure"
-      | "leftoverTenure"
-      | "startDate"
-      | "endDate"
-      | "amount"
-      | "payPerMonth"
-    > & { card: number }
-  >({
+  } = useForm<FormInstallmentProp>({
     resolver: zodResolver(schema),
     mode: "onChange",
   });

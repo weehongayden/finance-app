@@ -1,7 +1,7 @@
-import { CardProp } from "./card";
-import { UserProp } from "./user";
+import type { CardProp } from "./card";
+import type { UserProp } from "./user";
 
-export type InstallmentProp = {
+export interface InstallmentProp {
   id: number;
   name: string;
   statementDate: number;
@@ -15,7 +15,7 @@ export type InstallmentProp = {
   card: CardProp;
 };
 
-export type FormInstallmentProp = Pick<
+export interface FormInstallmentProp extends Pick<
   InstallmentProp,
   | "tenure"
   | "startDate"
@@ -24,6 +24,6 @@ export type FormInstallmentProp = Pick<
   | "leftoverTenure"
   | "endDate"
   | "payPerMonth"
-> & {
+> {
   card: number;
 };

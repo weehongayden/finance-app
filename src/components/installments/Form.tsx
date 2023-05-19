@@ -1,16 +1,17 @@
-import { CardOptionProp } from "@/types/card";
-import { FormInstallmentProp } from "@/types/installment";
+import type { CardOptionProp } from "@/types/card";
+import type { FormInstallmentProp } from "@/types/installment";
 import moment from "moment";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Dispatch, SetStateAction } from "react";
-import {
+import type { Dispatch, SetStateAction } from "react";
+import type {
   FieldErrors,
   UseFormHandleSubmit,
   UseFormRegister,
   UseFormSetValue,
 } from "react-hook-form";
-import Select, { SingleValue } from "react-select";
+import type { SingleValue } from "react-select";
+import Select from "react-select";
 
 export default function Form({
   handleSubmit,
@@ -49,17 +50,17 @@ export default function Form({
             <div className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
               <div className="sm:col-span-4">
                 <label
-                  htmlFor="installment-name"
+                  htmlFor="name"
                   className="block text-sm font-medium leading-6 text-gray-900"
                 >
-                  Installment Name <span className="text-red-500">*</span>
+                  Name <span className="text-red-500">*</span>
                 </label>
                 <div className="mt-2">
                   <input
                     {...register("name")}
                     type="text"
-                    id="installment-name"
-                    placeholder="Installment Name"
+                    id="name"
+                    placeholder="Name"
                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   />
                   <span className="text-xs text-red-500">
@@ -73,7 +74,7 @@ export default function Form({
                   htmlFor="card"
                   className="block text-sm font-medium leading-6 text-gray-900"
                 >
-                  Credit Card
+                  Card
                 </label>
                 <div className="mt-2">
                   <Select
@@ -149,7 +150,7 @@ export default function Form({
                   htmlFor="amount"
                   className="block text-sm font-medium leading-6 text-gray-900"
                 >
-                  Total Amount <span className="text-red-500">*</span>
+                  Amount <span className="text-red-500">*</span>
                 </label>
                 <div className="mt-2">
                   <input
