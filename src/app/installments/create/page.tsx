@@ -6,6 +6,7 @@ import type { FormInstallmentProp } from "@/types/installment";
 import { create, fetchAll } from "@/utils/fetcher";
 import { schema } from "@/utils/validation/installment";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Console } from "console";
 import moment from "moment";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";

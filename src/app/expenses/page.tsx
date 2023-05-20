@@ -152,6 +152,16 @@ export default function Installment() {
     }
   }, [data]);
 
+  const deleteInstallment = async (id: number) => {
+    const res = await fetch(`/api/installments/${id}`, {
+      method: "DELETE",
+    });
+    if (res.ok) {
+      return res.json();
+    }
+    return undefined;
+  };
+
   const notify = (status: boolean, message?: string) => {
     if (status) return toast.success(message);
     return toast.error(message);

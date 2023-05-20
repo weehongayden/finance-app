@@ -1,46 +1,128 @@
-import type { CategoryOptionProp } from "@/types/category";
+import type { CategoryOptionProp, CategoryProp } from "@/types/category";
 import type { FormExpenseProp } from "@/types/expense";
+import { remove } from "@/utils/fetcher";
+import { PencilSquareIcon, TrashIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Dispatch, SetStateAction } from "react";
-import type {
+import { Dispatch, SetStateAction, useState } from "react";
+import {
+  Control,
+  Controller,
   FieldErrors,
   UseFormHandleSubmit,
   UseFormRegister,
   UseFormSetValue,
 } from "react-hook-form";
-import type { SingleValue } from "react-select";
+import type { ActionMeta, SingleValue, SingleValueProps } from "react-select";
+import { components } from "react-select";
 import CreatableSelect from "react-select/creatable";
+import ConfirmationModal from "../ConfirmationModal";
 
 export default function Form({
   handleSubmit,
   onSubmit,
   register,
-  setValue,
+  control,
   errors,
   buttonName,
   setSelectedCategoryOption,
   selectCategoryOption,
   categoryOptions,
   onCreateCategory,
+  onMutate,
+  onNotify,
 }: {
   handleSubmit: UseFormHandleSubmit<FormExpenseProp>;
-  onSubmit: (data: any) => {};
+  onSubmit: () => {};
   register: UseFormRegister<FormExpenseProp>;
-  setValue: UseFormSetValue<FormExpenseProp>;
+  control: Control<FormExpenseProp, any>;
   errors: FieldErrors<FormExpenseProp>;
   buttonName: string;
   setSelectedCategoryOption: Dispatch<
     SetStateAction<CategoryOptionProp | null | undefined>
   >;
+  setValue: UseFormSetValue<FormExpenseProp>;
   selectCategoryOption: CategoryOptionProp | null | undefined;
   categoryOptions: CategoryOptionProp[] | undefined;
-  onCreateCategory: (data: any) => {};
+  onCreateCategory: (data: string) => {};
+  onMutate: () => {};
+  onNotify: (isOpen: boolean, message: string) => {};
 }) {
+  const [selectedValue, setSelectedValue] = useState<CategoryProp>();
+  const [openConfirmationDialog, setOpenConfirmationDialog] =
+    useState<boolean>(false);
   const router = useRouter();
+
+  const SingleValueLabel = ({
+    children,
+    ...props
+  }: SingleValueProps<CategoryOptionProp>) => {
+    return (
+      <components.SingleValue {...props}>
+        {props.data.label}
+      </components.SingleValue>
+    );
+  };
+
+  const formatOptionLabel = (option: CategoryOptionProp) => {
+    return (
+      <div className="flex justify-between">
+        <span>{option.label}</span>
+        {!option.label.includes("Create") && (
+          <div className="flex items-center">
+            <Link href={`/categories/update/${option.value}`}>
+              <PencilSquareIcon
+                className="h-5 w-5 text-indigo-500"
+                aria-hidden="true"
+              />
+            </Link>
+            <div className="px-1"></div>
+            <button
+              onClick={() => {
+                setOpenConfirmationDialog(!openConfirmationDialog);
+                setSelectedValue({
+                  id: option.value,
+                  name: option.label,
+                });
+              }}
+            >
+              <TrashIcon className="h-5 w-5 text-red-500" aria-hidden="true" />
+            </button>
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <>
+      {openConfirmationDialog && (
+        <ConfirmationModal
+          isOpen={openConfirmationDialog}
+          setOpen={setOpenConfirmationDialog}
+          title={"Delete installment"}
+          message={
+            <span>
+              Are you sure want to delete <b>{selectedValue?.name}</b>?
+              <br />
+              This action cannot be undone.
+            </span>
+          }
+          action={async () => {
+            const res = await remove(`/api/categories/${selectedValue?.id}`);
+            if (res) {
+              onNotify(
+                true,
+                `${selectedValue?.name} has been deleted successfully`
+              );
+              setSelectedCategoryOption(null);
+              onMutate();
+            } else {
+              onNotify(false, `Failed to delete the record`);
+            }
+          }}
+        />
+      )}
       <form onSubmit={handleSubmit(onSubmit)}>
         <div>
           <div className="pb-8">
@@ -53,23 +135,34 @@ export default function Form({
                   Category
                 </label>
                 <div className="mt-2">
-                  <CreatableSelect
+                  <Controller
                     {...register("category")}
-                    value={selectCategoryOption}
-                    id="category"
-                    onChange={(newValue: SingleValue<CategoryOptionProp>) => {
-                      if (newValue) {
-                        setValue("category", newValue.value);
-                        setSelectedCategoryOption({
-                          label: newValue.label,
-                          value: newValue.value,
-                        });
-                      }
-                    }}
-                    options={categoryOptions}
-                    onCreateOption={(inputValue) =>
-                      onCreateCategory(inputValue)
-                    }
+                    control={control}
+                    render={({ field }) => (
+                      <CreatableSelect
+                        {...field}
+                        value={selectCategoryOption}
+                        id="category"
+                        components={{
+                          NoOptionsMessage: () => null,
+                          SingleValue: SingleValueLabel,
+                        }}
+                        formatOptionLabel={formatOptionLabel}
+                        onChange={(newValue: SingleValue<any>) => {
+                          if (newValue) {
+                            field.onChange(newValue);
+                            setSelectedCategoryOption({
+                              label: newValue.label,
+                              value: newValue.value,
+                            });
+                          }
+                        }}
+                        onCreateOption={(inputValue: string) =>
+                          onCreateCategory(inputValue)
+                        }
+                        options={categoryOptions}
+                      />
+                    )}
                   />
                   <p className="text-sm text-red-500 pl-2 mt-1">
                     {errors.category?.message}

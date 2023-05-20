@@ -4,7 +4,7 @@ import Form from "@/components/expenses/Form";
 import type { CategoryOptionProp, CategoryProp } from "@/types/category";
 import type { FormExpenseProp } from "@/types/expense";
 import { create, fetchAll } from "@/utils/fetcher";
-import { schema } from "@/utils/validation/installment";
+import { schema } from "@/utils/validation/expense";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -12,10 +12,11 @@ import { toast } from "react-toastify";
 import useSWR from "swr";
 
 export default function Create() {
-  const { data: categories, isLoading } = useSWR<CategoryProp[]>(
-    "/api/categories",
-    fetchAll
-  );
+  const {
+    data: categories,
+    isLoading,
+    mutate,
+  } = useSWR<CategoryProp[]>("/api/categories", fetchAll);
   const [selectCategoryOption, setSelectedCategoryOption] =
     useState<CategoryOptionProp | null>();
   const [categoryOptions, setCategoryOptions] = useState<CategoryOptionProp[]>(
@@ -24,7 +25,9 @@ export default function Create() {
   const {
     register,
     reset,
+    control,
     handleSubmit,
+    getValues,
     setValue,
     formState: { errors },
   } = useForm<FormExpenseProp>({
@@ -60,8 +63,8 @@ export default function Create() {
     }
   };
 
-  const onSubmit = async (data: any) => {
-    const res = await create("/api/expenses", data);
+  const onSubmit = async () => {
+    const res = await create("/api/expenses", getValues());
     if (res) {
       reset();
       setSelectedCategoryOption(null);
@@ -77,17 +80,22 @@ export default function Create() {
   };
 
   return (
-    <Form
-      buttonName={"Create"}
-      handleSubmit={handleSubmit}
-      onSubmit={onSubmit}
-      register={register}
-      setValue={setValue}
-      errors={errors}
-      setSelectedCategoryOption={setSelectedCategoryOption}
-      selectCategoryOption={selectCategoryOption}
-      categoryOptions={categoryOptions}
-      onCreateCategory={onCreateCategory}
-    />
+    <>
+      <Form
+        buttonName={"Create"}
+        handleSubmit={handleSubmit}
+        onSubmit={onSubmit}
+        register={register}
+        setValue={setValue}
+        control={control}
+        errors={errors}
+        setSelectedCategoryOption={setSelectedCategoryOption}
+        selectCategoryOption={selectCategoryOption}
+        categoryOptions={categoryOptions}
+        onCreateCategory={onCreateCategory}
+        onMutate={mutate}
+        onNotify={notify}
+      />
+    </>
   );
 }
